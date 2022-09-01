@@ -1,0 +1,14 @@
+numpy
+sympy==1.6.2
+psutil==5.7.2
+pandas
+requests
+psycopg2
+six
+redis
+google-auth
+google_cloud_storage
+flask
+gunicorn==20.1.0
+firebase_admin==4.4.0
+google_cloud_firestore
