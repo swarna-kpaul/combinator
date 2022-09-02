@@ -2,7 +2,7 @@ from environment.env import *
 import pickle
 
 atype = {'iW':{'fun':{'i':['None'],'o':['any']}},
-		'+':{'fun':{'i':['num','num'],'o':['num']}}, 
+		'+':{'fun':{'i':['any','any'],'o':['any']}}, 
 		'id':{'fun':{'i':['any'],'o':['any']}},
 		'K':{'fun':{'i':['any'],'o':['any']}},
 		'-':{'fun':{'i':['num','num'],'o':['num']}},
@@ -30,10 +30,11 @@ atype = {'iW':{'fun':{'i':['None'],'o':['any']}},
 		'wm':{'fun':{'i':['any','any'],'o':['any']}},
 		'lg':{'fun':{'i':['any'],'o':['fun']}},
 		'lp':{'fun':{'i':['any','num'],'o':['any']}},
-		'pop':{'fun':{'i':['num','list'],'o':['any']}},
-		'pt':{'fun':{'i':['any'],'o':['any']}}}
+		'pop':{'fun':{'i':['any','any'],'o':['any']}},
+		'pt':{'fun':{'i':['any'],'o':['any']}},
+		'ak':{'fun':{'i':['dict','any','any'],'o':['dict']}}}
 
-no_of_args = {'iW':0,'+':2,'id':1, 'K': 1,'-':2,'*':2,'/':2,'^':2,'if':3,'=':2,'>':2,'&':2,'|':2,'!':1,'hd':1,'tl':1,'cn':2,'nl':1,'ap':2,'fm':2,'zp':3,'ag':2,'rc':3,'sn':1,'ac':1,'gc':1,'wm':2,'lg':1,'gp':1, 'lp':2,'pop':2,'pt':1}
+no_of_args = {'iW':0,'+':2,'id':1, 'K': 1,'-':2,'*':2,'/':2,'^':2,'if':3,'=':2,'>':2,'&':2,'|':2,'!':1,'hd':1,'tl':1,'cn':2,'nl':1,'ap':2,'fm':2,'zp':3,'ag':2,'rc':3,'sn':1,'ac':1,'gc':1,'wm':2,'lg':1,'gp':1, 'lp':2,'pop':2,'pt':1,'ak':3}
 
 
 

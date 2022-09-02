@@ -1,6 +1,5 @@
 from interpreter.program_expression import *
 from interpreter.program_probability import *
-import numpy as np
 import pickle
 label =0
 no_of_arguments=0 
@@ -123,10 +122,16 @@ def createnode( graph, nodename,*args):
 		graph['nodes'][init_node_label]['ty'] = pickle.loads(pickle.dumps(atype['K'],-1))
 	elif nodename == 'sn':
 		graph['nodes'][init_node_label]['ty'] = pickle.loads(pickle.dumps(atype['sn'],-1))
-		graph['nodes'][init_node_label]['ty']['fun']['o'] = args[0]
+		try:
+			graph['nodes'][init_node_label]['ty']['fun']['o'] = args[0]
+		except:
+			graph['nodes'][init_node_label]['ty']['fun']['o'] = 'any'
 	elif nodename == 'ac':
 		graph['nodes'][init_node_label]['ty'] = pickle.loads(pickle.dumps(atype['ac'],-1))
-		graph['nodes'][init_node_label]['ty']['fun']['i'] = args[0]	
+		try:
+			graph['nodes'][init_node_label]['ty']['fun']['i'] = args[0]	
+		except:
+			graph['nodes'][init_node_label]['ty']['fun']['o'] = 'any'
 	elif nodename in ['id','hd','cn','ap','ag','zp','fm','rc','wm','lg','if','lp','pt']:
 		graph['nodes'][init_node_label]['ty'] = pickle.loads(pickle.dumps(atype[nodename],-1))
 	elif nodename == 'gp': #composite graph

@@ -61,8 +61,11 @@ def _interpret_single_input_funct(nodename,terminalnode_label,graph,tottime): #[
 			raise integratorruntimeerror([{'message':"Parent output of this negate node is not a boolean value!",'error':repr(e),'nodeid':terminalnode_label}])
 		nodenamefull = "negate"
 	elif nodename == 'nl':
-		data = []
-		nodenamefull = "emptylist"
+		if parentoutput == 'keyvalue':
+			data = {}
+		else:
+			data = []
+		nodenamefull = "emptylistordict"
 	elif nodename == 'hd':
 		try:
 			data = parentoutput[0]
@@ -143,7 +146,11 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 	try:
 		if nodename == '+':
 			nodenamefull = "addition"
-			data = parentoutput1 + parentoutput2
+			if isinstance(parentoutput1,dict) and isinstance(parentoutput2,dict):
+				parentoutput1.update(parentoutput2)
+				data = parentoutput1
+			else:
+				data = parentoutput1 + parentoutput2
 		elif nodename == '-':
 			nodenamefull = "subtraction"
 			data = parentoutput1-parentoutput2
@@ -181,10 +188,18 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 		#print(parentoutput2)
 	elif nodename == 'pop':
 		nodenamefull = "pop"
-		try:
-			data = parentoutput2[int(parentoutput1)]
-		except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput2 may not be in list format or parentoutput1 is not in integer format or invalid index supplied in parentoutput1.",'error':repr(e),'nodeid':terminalnode_label}])
+		if isinstance(parentoutput2,list):
+			try:
+				data = parentoutput2[int(parentoutput1)]
+			except Exception as e:
+				raise integratorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput1 is not in integer format or invalid index supplied in parentoutput1.",'error':repr(e),'nodeid':terminalnode_label}])
+		elif isinstance(parentoutput2,dict):
+			try:
+				data = parentoutput2[parentoutput1]
+			except Exception as e:
+				raise integratorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput1 is not a valid key for parentoutput2.",'error':repr(e),'nodeid':terminalnode_label}])
+		else:
+			raise integratorruntimeerror([{'message':"Parentoutput2 should either be a list or key-value pairs!",'error':repr(e),'nodeid':terminalnode_label}])
 	elif nodename == '=':
 		nodenamefull = "equality"
 		try:
@@ -196,6 +211,32 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 	except Exception as e:
 		raise integratorruntimeerror("Unable to set node output value for this "+nodenamefull+" node!",[repr(e)],[terminalnode_label])
 	setval_graph('wv',max(wv1,wv2),graph,terminalnode_label,'N')
+	setval_graph('w',w1,graph,terminalnode_label,'N')
+	return tottime
+
+def _interpret_ak(nodename,terminalnode_label,graph,tottime):
+	try:
+		parents = getval_graph(graph,terminalnode_label,'E')
+	except Exception as e:
+		raise integratorruntimeerror([{'message':"Unable to get parent node of this addkey node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+	if len(parents) < 3:
+		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+	parnode_label,pargraph = returngraph(parents[0],graph)
+	parentoutput1,w1,wv1,tottime = interpreter(parnode_label,pargraph,tottime)
+	parnode_label,pargraph = returngraph(parents[1],graph)
+	parentoutput2,w2,wv2,tottime = interpreter(parnode_label,pargraph,tottime) 
+	parnode_label,pargraph = returngraph(parents[2],graph)
+	parentoutput3,w3,wv3,tottime = interpreter(parnode_label,pargraph,tottime) 
+	try:
+		parentoutput1[parentoutput2] = parentoutput3
+		data = parentoutput1
+	except Exception as e:
+			raise integratorruntimeerror([{'message':"Unable to add key parentoutput2 in parentoutput1! The parentoutput1 may not be in key-value format or parentoutput2 may not be in string or number format",'error':repr(e),'nodeid':terminalnode_label}])
+	try:
+		setval_graph('dat',data,graph,terminalnode_label,'N')
+	except Exception as e:
+		raise integratorruntimeerror("Unable to set node output value for this addkey node!",[repr(e)],[terminalnode_label])
+	setval_graph('wv',max(wv1,wv2,wv3),graph,terminalnode_label,'N')
 	setval_graph('w',w1,graph,terminalnode_label,'N')
 	return tottime
 
@@ -633,6 +674,8 @@ def _interpreter( terminalnode_label,  graph, tottime):
 				tottime = _interpret_if(nodename,terminalnode_label,graph,tottime)
 			elif nodename == 'rc':
 				tottime = _interpret_rc(nodename,terminalnode_label,graph,tottime)
+			elif nodename == 'ak':
+				tottime = _interpret_ak(nodename,terminalnode_label,graph,tottime)
 		elif no_of_args[nodename] == 1:#nodename =='K' or nodename == 'id' or nodename == '!' or nodename == 'hd' or nodename == 'tl' or nodename == 'sn' or nodename == 'ac' or nodename == 'gc' or nodename =='nl': #nodename in ['K','id','!','hd','tl','sn','ac','gc','nl']: ########### constant, identity, negate
 			tottime = _interpret_single_input_funct(nodename,terminalnode_label,graph,tottime)
 		elif no_of_args[nodename] == 2: #nodename == '+' or nodename =='-' or nodename == '*' or nodename == '/' or nodename == '^' or nodename == '&' or nodename == '|' or nodename == '>' or nodename =='=' or nodename =='cn' or nodename =='wm':#nodename == ['+','-','*','/','^','&','|','>','=','cn','wm']: ########### num operators

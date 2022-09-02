@@ -1,9 +1,4 @@
-from environment.grid import *
-#from PyAgentX.environment.NAS_MNIST import *
-#from PyAgentX.environment.NAS_CIFAR import *
-#from PyAgentX.environment.NAS_CIFAR_All import *
-#from PyAgentX.environment.tic_tac_toe import *
-#from environment.microapienv import *
+from environment.apienv import *
 import time
 import os
 import psutil
@@ -17,8 +12,8 @@ class world_pending_exception(Exception):
 
 class world:
 	
-	def __init__(self,out_data_type,env_func_obj):
-		self.update_env(out_data_type,env_func_obj)
+	def __init__(self,env_func_obj,out_data_type='any'):
+		self.update_env(env_func_obj,out_data_type)
 		self.envtime_sec = 0
 		self.PHASE = 2
 		self.upper_PHASE = 2
@@ -34,7 +29,7 @@ class world:
 		self.obs = None
 		self.world_funct.reset()
 		
-	def update_env(self,out_data_type,env_func_obj):
+	def update_env(self,env_func_obj,out_data_type='any'):
 		self.data_type = out_data_type
 		self.version = 0
 		self.world_funct = env_func_obj
@@ -97,10 +92,6 @@ class world:
 		
 	def set_state(self,state):
 		return self.world_funct.set_state(state)
-		
-
-max_reward = 5
-min_reward = -10
     
 ######### initialize world
-init_world = world('any',grid_world)
+init_world = world(api_world)
