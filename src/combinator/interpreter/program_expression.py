@@ -1,5 +1,5 @@
 from sympy import Symbol,simplify
-from interpreter.globalobjects import no_of_args
+from combinator.interpreter.globalobjects import no_of_args
 
 
 def is_number(n):

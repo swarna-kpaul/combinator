@@ -1,4 +1,4 @@
-from interpreter.globalobjects  import *
+from combinator.interpreter.globalobjects  import *
 
 def _getatype(graph,nodelabel):
 	global atype
