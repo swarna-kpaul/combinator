@@ -33,7 +33,7 @@ class microapi:
 	
 	def take_action(self,action,remoteserviceheader={}):
 		current_state = self.state['state']
-		print("at take action time",current_state, time.time())
+		#print("at take action time",current_state, time.time())
 		########### Take action
 		if not current_state:
 			apiname = action ###self.state['apimap'][action]
