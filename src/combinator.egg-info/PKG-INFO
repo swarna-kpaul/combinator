@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: combinator
-Version: 1.0
+Version: 1.1
 Summary: The programming model to integrate AI components
 Home-page: https://github.com/swarna-kpaul/combinator
 Author: Swarna Kamal Paul
@@ -144,7 +144,7 @@ g7 = createnode(graph,'lg')
 g8 = createnode(graph,'lg')
 g9 = createnode(graph,'rc')
 addlink(graph,g1);addlink(graph,g2,g1);addlink(graph,g3,g1);addlink(graph,g4,g3,g1);addlink(graph,g5,g1);addlink(graph,g6,g1,g5);addlink(graph,g7,g6);addlink(graph,g8,g4);addlink(graph,g9,g8,g7,g2);
-output = runp(g4,graph)
+output = runp(g9,graph)
 print(output[0])
 ```
 
@@ -161,7 +161,7 @@ g6 = createnode(graph,'ac','char');
 g7 = createnode(graph,'sn','any');
 addlink(graph,g1);addlink(graph,g2,g1);addlink(graph,g4,g2);
 addlink(graph,g5,g4);addlink(graph,g3,g5);addlink(graph,g6,g3);addlink(graph,g7,g6);
-output = runp(g4,graph)
+output = runp(g7,graph)
 print(output[0])
 ```
 
@@ -169,6 +169,22 @@ print(output[0])
 ```python
 from combinator import init_world
 init_world.update_env(<environment object>) # check environment/apienv.py to find out how to build an environment object. It can serve as an template to build your own custom environment object
+```
+
+##### Get runtime errors
+```python
+from combinator import creategraph, createnode, addlink, init_world, runp,combinatorruntimeerror
+graph = creategraph()
+g1 = createnode(graph,'iW',init_world)
+g2 = createnode(graph,'K',2);
+g3 = createnode(graph,'K','3')
+g4 = createnode(graph,'-')
+print(g1,g2,g2,g4)
+addlink(graph,g1);addlink(graph,g2,g1);addlink(graph,g3,g1);addlink(graph,g4,g3,g2);
+try:
+  print(runp(g4,graph))
+except integratorruntimeerror as e:
+  print(e.error)
 ```
 
 

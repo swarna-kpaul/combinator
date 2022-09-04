@@ -7,7 +7,7 @@ class time_exception(Exception):
 	pass
 
 
-class integratorruntimeerror(Exception):
+class combinatorruntimeerror(Exception):
 	def __init__(self, message=[]):            
         # Call the base class constructor with the parameters it needs
 		super().__init__(message)
@@ -38,14 +38,14 @@ def _interpret_single_input_funct(nodename,terminalnode_label,graph,tottime): #[
 	try:
 		parents=getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this lambdagraph node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this lambdagraph node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
 	parnode_label,pargraph = returngraph(parents[0],graph)
 	parentoutput,w,wv,tottime=interpreter(parnode_label,pargraph,tottime)   
 	if nodename == 'K':
 		try:
 			data = graph['nodes'][terminalnode_label]['K']
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in fetching assigned constant value! Please check if the constant value is properly set for this constant node!",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in fetching assigned constant value! Please check if the constant value is properly set for this constant node!",'error':repr(e),'nodeid':terminalnode_label}])
 		nodenamefull = "constant"
 	elif nodename == 'id':
 		data = parentoutput
@@ -58,7 +58,7 @@ def _interpret_single_input_funct(nodename,terminalnode_label,graph,tottime): #[
 		try:
 			data = not parentoutput
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Parent output of this negate node is not a boolean value!",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Parent output of this negate node is not a boolean value!",'error':repr(e),'nodeid':terminalnode_label}])
 		nodenamefull = "negate"
 	elif nodename == 'nl':
 		if parentoutput == 'keyvalue':
@@ -70,14 +70,14 @@ def _interpret_single_input_funct(nodename,terminalnode_label,graph,tottime): #[
 		try:
 			data = parentoutput[0]
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable get the first element of the list! Either the input data of the head node is not of list type or it is empty.",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Unable get the first element of the list! Either the input data of the head node is not of list type or it is empty.",'error':repr(e),'nodeid':terminalnode_label}])
 		nodenamefull = "head"
 	elif nodename == 'tl':
 		templist=parentoutput
 		try:
 			data = templist[1:len(templist)]
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable get the tail of the list! The input data of this tail node may not be of list type.",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Unable get the tail of the list! The input data of this tail node may not be of list type.",'error':repr(e),'nodeid':terminalnode_label}])
 		nodenamefull = "tail"
 	elif nodename == 'sn':
 		data = w.get_data(tottime.remoteserviceheader)
@@ -107,7 +107,7 @@ def _interpret_single_input_funct(nodename,terminalnode_label,graph,tottime): #[
 	try:
 		setval_graph('dat',data,graph,terminalnode_label,'N')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to set node output value for this "+nodenamefull+" node!",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to set node output value for this "+nodenamefull+" node!",'error':repr(e),'nodeid':terminalnode_label}])
 	setval_graph('wv',wv,graph,terminalnode_label,'N')
 	setval_graph('w',w,graph,terminalnode_label,'N')
 	return tottime
@@ -116,7 +116,7 @@ def _interpret_lg(nodename,terminalnode_label,graph,tottime): ##### lambdagraph
 	try:
 		parents=getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this lambdagraph node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this lambdagraph node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
 	id1 = createnode(graph,'id')
 	#graph['nodes'][id1]['ii'] = 1
 	setval_graph('ii',1,graph,id1,'N')
@@ -124,7 +124,7 @@ def _interpret_lg(nodename,terminalnode_label,graph,tottime): ##### lambdagraph
 		data,world,world_version = returnSubgraph(graph,parents[0],id1)
 		resetGraph(data)
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to generate parent subgraph of this lambdagraph node as it might be directly connected to initWorld.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to generate parent subgraph of this lambdagraph node as it might be directly connected to initWorld.",'error':repr(e),'nodeid':terminalnode_label}])
 	setval_graph('dat',data,graph,terminalnode_label,'N')
 	del graph['nodes'][id1]
 	setval_graph('wv',world_version,graph,terminalnode_label,'N')
@@ -135,9 +135,9 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 	try:
 		parents=getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 2:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label,pargraph = returngraph(parents[0],graph)
 	parentoutput1,w1,wv1,tottime = interpreter(parnode_label,pargraph,tottime)
 	parnode_label,pargraph = returngraph(parents[1],graph)
@@ -173,7 +173,7 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 			nodenamefull = "greaterthan"
 			data = parentoutput1 > parentoutput2
 	except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable to do "+nodenamefull+" of two parent outputs! "+repr(e).replace("\\",''),'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Unable to do "+nodenamefull+" of two parent outputs! "+repr(e).replace("\\",''),'error':repr(e),'nodeid':terminalnode_label}])
 	
 	if nodename == 'wm':
 		nodenamefull = "worldmerger"
@@ -183,7 +183,7 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 		try:
 			parentoutput2.append(parentoutput1)
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable to append parentoutput1 to parentoutput2! The parentoutput2 may not be in list format.",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Unable to append parentoutput1 to parentoutput2! The parentoutput2 may not be in list format.",'error':repr(e),'nodeid':terminalnode_label}])
 		data = parentoutput2
 		#print(parentoutput2)
 	elif nodename == 'pop':
@@ -192,24 +192,24 @@ def _interpret_two_port_funct(nodename,terminalnode_label,graph,tottime): #['+',
 			try:
 				data = parentoutput2[int(parentoutput1)]
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput1 is not in integer format or invalid index supplied in parentoutput1.",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput1 is not in integer format or invalid index supplied in parentoutput1.",'error':repr(e),'nodeid':terminalnode_label}])
 		elif isinstance(parentoutput2,dict):
 			try:
 				data = parentoutput2[parentoutput1]
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput1 is not a valid key for parentoutput2.",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Unable to pop from parentoutput2! The parentoutput1 is not a valid key for parentoutput2.",'error':repr(e),'nodeid':terminalnode_label}])
 		else:
-			raise integratorruntimeerror([{'message':"Parentoutput2 should either be a list or key-value pairs!",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Parentoutput2 should either be a list or key-value pairs!",'error':repr(e),'nodeid':terminalnode_label}])
 	elif nodename == '=':
 		nodenamefull = "equality"
 		try:
 			data = parentoutput1 == parentoutput2
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable to check equality between parentoutput1 and parentoutput2! "+repr(e),'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Unable to check equality between parentoutput1 and parentoutput2! "+repr(e),'error':repr(e),'nodeid':terminalnode_label}])
 	try:
 		setval_graph('dat',data,graph,terminalnode_label,'N')
 	except Exception as e:
-		raise integratorruntimeerror("Unable to set node output value for this "+nodenamefull+" node!",[repr(e)],[terminalnode_label])
+		raise combinatorruntimeerror("Unable to set node output value for this "+nodenamefull+" node!",[repr(e)],[terminalnode_label])
 	setval_graph('wv',max(wv1,wv2),graph,terminalnode_label,'N')
 	setval_graph('w',w1,graph,terminalnode_label,'N')
 	return tottime
@@ -218,9 +218,9 @@ def _interpret_ak(nodename,terminalnode_label,graph,tottime):
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this addkey node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this addkey node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 3:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label,pargraph = returngraph(parents[0],graph)
 	parentoutput1,w1,wv1,tottime = interpreter(parnode_label,pargraph,tottime)
 	parnode_label,pargraph = returngraph(parents[1],graph)
@@ -231,11 +231,11 @@ def _interpret_ak(nodename,terminalnode_label,graph,tottime):
 		parentoutput1[parentoutput2] = parentoutput3
 		data = parentoutput1
 	except Exception as e:
-			raise integratorruntimeerror([{'message':"Unable to add key parentoutput2 in parentoutput1! The parentoutput1 may not be in key-value format or parentoutput2 may not be in string or number format",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Unable to add key parentoutput2 in parentoutput1! The parentoutput1 may not be in key-value format or parentoutput2 may not be in string or number format",'error':repr(e),'nodeid':terminalnode_label}])
 	try:
 		setval_graph('dat',data,graph,terminalnode_label,'N')
 	except Exception as e:
-		raise integratorruntimeerror("Unable to set node output value for this addkey node!",[repr(e)],[terminalnode_label])
+		raise combinatorruntimeerror("Unable to set node output value for this addkey node!",[repr(e)],[terminalnode_label])
 	setval_graph('wv',max(wv1,wv2,wv3),graph,terminalnode_label,'N')
 	setval_graph('w',w1,graph,terminalnode_label,'N')
 	return tottime
@@ -244,7 +244,7 @@ def _interpret_gp(nodename,terminalnode_label,graph,tottime):  #### graph progra
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this gp node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this gp node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
 	subgraph = getval_graph(graph,terminalnode_label,'N','fun')
 	try:
 		if len(getval_graph(graph,terminalnode_label,'E')) >= getargs(terminalnode_label,graph): ############ all linkconnections satisfied
@@ -254,11 +254,11 @@ def _interpret_gp(nodename,terminalnode_label,graph,tottime):  #### graph progra
 			parnode_label,pargraph = returngraph(parents[0],graph)
 			parentoutput1,w,wv,tottime = interpreter(parnode_label,pargraph,tottime)
 			setval_graph('dat',subgraph,graph,terminalnode_label,'N')
-	except integratorruntimeerror as e:
+	except combinatorruntimeerror as e:
 		e.error.append({'message':"Error in evaluating subgraph in gp node!",'error':'parenterror','nodeid':terminalnode_label})
-		raise integratorruntimeerror(e.error)
+		raise combinatorruntimeerror(e.error)
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Error in evaluating subgraph in gp node!",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Error in evaluating subgraph in gp node!",'error':repr(e),'nodeid':terminalnode_label}])
 	setval_graph('wv',wv,graph,terminalnode_label,'N')
 	setval_graph('w',w,graph,terminalnode_label,'N')
 	return tottime
@@ -267,9 +267,9 @@ def _interpret_ap(nodename,terminalnode_label,graph,tottime):  #### apply
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this apply node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this apply node! Please check for input port connection.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 2:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this apply node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this apply node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label,pargraph = returngraph(parents[0],graph)
 	#try:
 	parentoutput1,w,wv,tottime = interpreter(parnode_label,pargraph,tottime)
@@ -279,35 +279,35 @@ def _interpret_ap(nodename,terminalnode_label,graph,tottime):  #### apply
 		try:
 			addlink(graph,_nlabel,parents[1])
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in adding link to subgraph in apply node! Please check if all the input ports of the apply node are connected.",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in adding link to subgraph in apply node! Please check if all the input ports of the apply node are connected.",'error':repr(e),'nodeid':terminalnode_label}])
 		del graph['terminalnodes'][_nlabel]
 		if len(getval_graph(graph,_nlabel,'E')) >= getargs(_nlabel,graph): ############ all linkconnections satisfied
 			try:
 				currentoutput,w,wv,tottime = interpreter(_nlabel,graph,tottime)
-			except integratorruntimeerror as e:
+			except combinatorruntimeerror as e:
 				e.error.append({'message':"Error in evaluating subgraph in apply node! The parentnode1 should return a valid graph type that can be applied on the output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
-				raise integratorruntimeerror(e.error)
+				raise combinatorruntimeerror(e.error)
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Error in evaluating subgraph in apply node!",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Error in evaluating subgraph in apply node!",'error':repr(e),'nodeid':terminalnode_label}])
 		else:
 			currentoutput = parentoutput1
 	else:
 		try:
 			_nlabel=createnode(graph,'gp',parentoutput1)
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in creating subgraph in apply node! The parentnode1 should return a graph type.",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in creating subgraph in apply node! The parentnode1 should return a graph type.",'error':repr(e),'nodeid':terminalnode_label}])
 		try:
 			addlink(graph,_nlabel,parents[1])
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in adding link to subgraph in apply node! Please check if all the input ports of the apply node are connected.",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in adding link to subgraph in apply node! Please check if all the input ports of the apply node are connected.",'error':repr(e),'nodeid':terminalnode_label}])
 		del graph['terminalnodes'][_nlabel]
 		try:
 			currentoutput,w,wv,tottime = interpreter(_nlabel,graph,tottime)
-		except integratorruntimeerror as e:
+		except combinatorruntimeerror as e:
 			e.error.append({'message':"Error in evaluating subgraph in apply node! The parentnode1 should return a valid graph type that can be applied on the output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
-			raise integratorruntimeerror(e.error)
+			raise combinatorruntimeerror(e.error)
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in evaluating subgraph in apply node!",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in evaluating subgraph in apply node!",'error':repr(e),'nodeid':terminalnode_label}])
 		remove_node(graph,_nlabel)
 	setval_graph('dat',currentoutput,graph,terminalnode_label,'N')
 	setval_graph('w',w,graph,terminalnode_label,'N')
@@ -318,9 +318,9 @@ def _interpret_if(nodename,terminalnode_label,graph,tottime): ###### conditional
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this condition node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this condition node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 3:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this condition node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this condition node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label,pargraph = returngraph(parents[0],graph)
 	parentoutput1,w,wv1,tottime = interpreter(parnode_label,pargraph,tottime)
 	if parentoutput1:
@@ -339,9 +339,9 @@ def _interpret_fmap(nodename,terminalnode_label,graph,tottime):
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this fmap node! Please check for all input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this fmap node! Please check for all input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 2:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this fmap node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this fmap node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label1,pargraph1 = returngraph(parents[0],graph)
 	parnode_label2,pargraph2 = returngraph(parents[1],graph)
 	_nlabel1=createnode(graph,'lg')
@@ -350,11 +350,11 @@ def _interpret_fmap(nodename,terminalnode_label,graph,tottime):
 	del graph['terminalnodes'][_nlabel1]
 	try:	
 		in_function,w,wv,tottime=interpreter(_nlabel1,pargraph1, tottime)
-	except integratorruntimeerror as e:
+	except combinatorruntimeerror as e:
 		e.error.append({'message':"Error in fetching subgraph of parentnode1 of the fmap node!",'error':'parenterror','nodeid':terminalnode_label})
-		raise integratorruntimeerror(e.error)
+		raise combinatorruntimeerror(e.error)
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Error in fetching subgraph of parentnode1 of the fmap node!",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Error in fetching subgraph of parentnode1 of the fmap node!",'error':repr(e),'nodeid':terminalnode_label}])
 	initialvaluelist,w,wv,tottime=interpreter(parnode_label2,pargraph2, tottime)
 	#print('parnode_label2:', parents[1])
 	initialnode = parents[1]
@@ -363,7 +363,7 @@ def _interpret_fmap(nodename,terminalnode_label,graph,tottime):
 	try:
 		iter(initialvaluelist)
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to iterate on the ouptut of parentnode2! The output of parentnode2 should be of list or string type.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to iterate on the ouptut of parentnode2! The output of parentnode2 should be of list or string type.",'error':repr(e),'nodeid':terminalnode_label}])
 	for i in initialvaluelist:
 		new_in_function = pickle.loads(pickle.dumps(in_function,-1))
 		newvaluenode = createnode(graph,'K',i)
@@ -381,11 +381,11 @@ def _interpret_fmap(nodename,terminalnode_label,graph,tottime):
 				node['fun']['par'] = new_in_function  
 		try:
 			currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
-		except integratorruntimeerror as e:
+		except combinatorruntimeerror as e:
 			e.error.append({'message':"Error in evaluating subgraph of parentnode1 in the fmap node on the value "+str(i)+"! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on each element of the list output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
-			raise integratorruntimeerror(e.error)
+			raise combinatorruntimeerror(e.error)
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the fmap node on the value "+str(i)+"!",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the fmap node on the value "+str(i)+"!",'error':repr(e),'nodeid':terminalnode_label}])
 		currentvaluelist.append(currentdata)
 		#initialnode = _nlabel0
 		remove_node(graph,_nlabel0)
@@ -406,9 +406,9 @@ def _interpret_zip(nodename,terminalnode_label,graph,tottime):
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent node of this zip node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent node of this zip node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 2:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this zip node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this zip node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label1,pargraph1 = returngraph(parents[0],graph)
 	parnode_label2,pargraph2 = returngraph(parents[1],graph)
 	initialvaluelist1,w,wv,tottime=interpreter(parnode_label1,pargraph1, tottime)
@@ -417,7 +417,7 @@ def _interpret_zip(nodename,terminalnode_label,graph,tottime):
 	try:
 		currentvaluelist = list(zip(initialvaluelist1,initialvaluelist2))
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to zip ouptut of parentnode1 and parentnode2! The output of parentnode1 and parentnode2 should be of list or string type.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to zip ouptut of parentnode1 and parentnode2! The output of parentnode1 and parentnode2 should be of list or string type.",'error':repr(e),'nodeid':terminalnode_label}])
 	currentvaluelist = [ [i,j] for i,j in currentvaluelist]
 	setval_graph('dat',currentvaluelist,graph,terminalnode_label,'N')
 	setval_graph('wv',wv,graph,terminalnode_label,'N')
@@ -429,9 +429,9 @@ def _interpret_agg(nodename,terminalnode_label,graph,tottime):
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent nodes of this aggregator node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent nodes of this aggregator node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 2:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this aggregator node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this aggregator node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label1,pargraph1 = returngraph(parents[0],graph)
 	parnode_label2,pargraph2 = returngraph(parents[1],graph)
 	
@@ -443,9 +443,9 @@ def _interpret_agg(nodename,terminalnode_label,graph,tottime):
 	try:
 		iter(initialvaluelist)
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to iterate ouptut of parentnode2! The output of parentnode2 should be of list or string type.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to iterate ouptut of parentnode2! The output of parentnode2 should be of list or string type.",'error':repr(e),'nodeid':terminalnode_label}])
 	if not initialvaluelist:
-		raise integratorruntimeerror([{'message':"Output of parentnode2 cannot be empty list!",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Output of parentnode2 cannot be empty list!",'error':repr(e),'nodeid':terminalnode_label}])
 	if initialvaluelist:
 		if len(initialvaluelist) > 1:
 			currentvalue1 = initialvaluelist[0]
@@ -477,11 +477,11 @@ def _interpret_agg(nodename,terminalnode_label,graph,tottime):
 					node['fun']['par'] = new_in_function  
 			try:
 				currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
-			except integratorruntimeerror as e:
+			except combinatorruntimeerror as e:
 				e.error.append({'message':"Error in evaluating subgraph from the output of parentnode1 in the aggregator node on the value "+str(currentvalue2)+"! The subgraph from the output of the parentnode1 should be a valid function that can be applied to aggregate each element of the list output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
-				raise integratorruntimeerror(e.error)
+				raise combinatorruntimeerror(e.error)
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the aggregator node on the value "+str(currentvalue2)+"!",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the aggregator node on the value "+str(currentvalue2)+"!",'error':repr(e),'nodeid':terminalnode_label}])
 			currentvalue1 = currentdata
 			try:
 				currentvalue2 = restofthelist[i]
@@ -500,9 +500,9 @@ def _interpret_loop(nodename,terminalnode_label,graph,tottime):
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent nodes of this loop node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent nodes of this loop node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 2:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this loop node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this loop node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label1,pargraph1 = returngraph(parents[0],graph)
 	parnode_label2,pargraph2 = returngraph(parents[1],graph)
 	_nlabel1=createnode(graph,'lg')
@@ -511,16 +511,16 @@ def _interpret_loop(nodename,terminalnode_label,graph,tottime):
 	del graph['terminalnodes'][_nlabel1]
 	try:
 		in_function,w,wv,tottime=interpreter(_nlabel1,pargraph1, tottime)
-	except integratorruntimeerror as e:
+	except combinatorruntimeerror as e:
 		e.error.append({'message':"Error in fetching subgraph of parentnode1 of the loop node!",'error':'parenterror','nodeid':terminalnode_label})
-		raise integratorruntimeerror(e.error)
+		raise combinatorruntimeerror(e.error)
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Error in fetching subgraph of parentnode1 of the loop node!",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Error in fetching subgraph of parentnode1 of the loop node!",'error':repr(e),'nodeid':terminalnode_label}])
 	initialvalue,w,wv,tottime=interpreter(parnode_label2,pargraph2, tottime)
 	#print('parnode_label2:', parents[1])
 	initialnode = parents[1]
 	if not isinstance(initialvalue,int):
-		raise integratorruntimeerror([{'message':"Parentnode2 output "+str(initialvalue)+" is not an integer!",'error':"Not an integer",'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Parentnode2 output "+str(initialvalue)+" is not an integer!",'error':"Not an integer",'nodeid':terminalnode_label}])
 	#print(in_function)
 	prev_node = None
 	currentdata = initialvalue
@@ -537,11 +537,11 @@ def _interpret_loop(nodename,terminalnode_label,graph,tottime):
 				node['fun']['par'] = new_in_function
 		try:
 			currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
-		except integratorruntimeerror as e:
+		except combinatorruntimeerror as e:
 			e.error.append({'message':"Error in evaluating subgraph of parentnode1 on the value "+str(currentdata)+"! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode2 and output of itself.",'error':'parenterror','nodeid':terminalnode_label})
-			raise integratorruntimeerror(e.error)
+			raise combinatorruntimeerror(e.error)
 		except Exception as e:
-			raise integratorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the loop node on the value "+str(currentdata)+"!",'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the loop node on the value "+str(currentdata)+"!",'error':repr(e),'nodeid':terminalnode_label}])
 		initialnode = _nlabel0
 		if prev_node != None:
 			#print('prev_node',prev_node)
@@ -558,9 +558,9 @@ def _interpret_rc(nodename,terminalnode_label,graph,tottime): ###### recursion
 	try:
 		parents = getval_graph(graph,terminalnode_label,'E')
 	except Exception as e:
-		raise integratorruntimeerror([{'message':"Unable to get parent nodes of this recurse node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get parent nodes of this recurse node! Please check for input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 	if len(parents) < 3:
-		raise integratorruntimeerror([{'message':"Unable to get all parent nodes of this recurse node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
+		raise combinatorruntimeerror([{'message':"Unable to get all parent nodes of this recurse node! Please check for all input port connections.",'error':'unconnected input ports','nodeid':terminalnode_label}])
 	parnode_label,pargraph = returngraph(parents[1],graph)
 	stopcondition,w,wv,tottime=interpreter(parnode_label,pargraph, tottime)
 	initialnode = parents[2]
@@ -579,32 +579,32 @@ def _interpret_rc(nodename,terminalnode_label,graph,tottime): ###### recursion
 				node['fun']['par'] = new_stopcondition  
 		try:
 			currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
-		except integratorruntimeerror as e:
+		except combinatorruntimeerror as e:
 			try:
 				message = "Error in evaluating stopping condition subgraph from the output of parentnode2 on the value "+str(currentdata)+ " in the recurse node! The subgraph corresponding to the parentnode2 should be a valid function that can be applied on output of parentnode3 and evaluated output of the subgraph recieved from parentnode1."
 			except:
 				message = "Error in evaluating stopping condition subgraph from the output of parentnode2 in the recurse node! The subgraph corresponding to the parentnode2 should be a valid function that can be applied on output of parentnode3 and evaluated output of the subgraph recieved from parentnode1."
 			e.error.append({'message':message,'error':'parenterror','nodeid':terminalnode_label})
-			raise integratorruntimeerror(e.error)
+			raise combinatorruntimeerror(e.error)
 		except Exception as e:
 			try:
 				message = "Error in evaluating stopping condition subgraph from the output of parentnode2 in the recurse node on the value "+str(currentdata)+"!"
 			except:
 				message = "Error in evaluating stopping condition subgraph from the output of parentnode2 in the recurse node!"
-			raise integratorruntimeerror([{'message':message,'error':repr(e),'nodeid':terminalnode_label}])
+			raise combinatorruntimeerror([{'message':message,'error':repr(e),'nodeid':terminalnode_label}])
 		if currentdata:
 			parnode_label,pargraph = returngraph(initialnode,graph)
 			try:
 				data,w1,wv1,tottime = interpreter(parnode_label,pargraph,tottime)
-			except integratorruntimeerror as e:
+			except combinatorruntimeerror as e:
 				try:
 					message = "Error in evaluating subgraph from the output of parentnode1 on the value "+str(currentoutput)+ " in the recurse node! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode3 and output of itself."
 				except:
 					message = "Error in evaluating subgraph from the output of parentnode1 in the recurse node! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode3 and output of itself."
 				e.error.append({'message':message,'error':'parenterror','nodeid':terminalnode_label})
-				raise integratorruntimeerror(e.error)
+				raise combinatorruntimeerror(e.error)
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Error in evaluating subgraph from the output of parentnode1 in the recurse node on the value "+str(currentoutput)+"!",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Error in evaluating subgraph from the output of parentnode1 in the recurse node on the value "+str(currentoutput)+"!",'error':repr(e),'nodeid':terminalnode_label}])
 			setval_graph('dat',data,graph,terminalnode_label,'N')
 			setval_graph('wv',max(wv,wv1),graph,terminalnode_label,'N')
 			setval_graph('w',w1,graph,terminalnode_label,'N')
@@ -627,15 +627,15 @@ def _interpret_rc(nodename,terminalnode_label,graph,tottime): ###### recursion
 					node['fun']['par'] = function1  
 			try:
 				currentoutput,w2,wv2,tottime = interpreter(_nlabel,graph,tottime)
-			except integratorruntimeerror as e:
+			except combinatorruntimeerror as e:
 				try:
 					message = "Error in evaluating subgraph from the output of parentnode1 on the value "+str(currentoutput)+ " in the recurse node! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode3 and output of itself."
 				except:
 					message = "Error in evaluating subgraph from the output of parentnode1 in the recurse node! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode3 and output of itself."
 				e.error.append({'message':message,'error':'parenterror','nodeid':terminalnode_label})
-				raise integratorruntimeerror(e.error)
+				raise combinatorruntimeerror(e.error)
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Error in evaluating subgraph from the output of parentnode1 in the recurse node!",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Error in evaluating subgraph from the output of parentnode1 in the recurse node!",'error':repr(e),'nodeid':terminalnode_label}])
 			remove_node(graph,prev_nlabel1)
 			remove_node(graph,prev_nlabel)
 			remove_node(graph,_nlabel0)
@@ -696,7 +696,7 @@ def interpreter(terminalnode_label, graph,tottime):
 			try:
 				parents=_cur_graph['edges'][terminalnode_label]
 			except Exception as e:
-				raise integratorruntimeerror([{'message':"Unable to get parent nodes of this node! Please check for all input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
+				raise combinatorruntimeerror([{'message':"Unable to get parent nodes of this node! Please check for all input port connections.",'error':repr(e),'nodeid':terminalnode_label}])
 			childnode_label = terminalnode_label
 			_prev_graph = _cur_graph
 			while True:
@@ -708,7 +708,7 @@ def interpreter(terminalnode_label, graph,tottime):
 						try:
 							parents = _new_cur_graph['edges'][parent_label]
 						except Exception as e:
-							raise integratorruntimeerror([{'message':"Unable to get parent nodes of this node! Please check for all input port connections.",'error':repr(e),'nodeid':parent_label}])
+							raise combinatorruntimeerror([{'message':"Unable to get parent nodes of this node! Please check for all input port connections.",'error':repr(e),'nodeid':parent_label}])
 						childnode_label = parent_label
 						all_parents_executed = 0
 						_prev_graph = _new_cur_graph
