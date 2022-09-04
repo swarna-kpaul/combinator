@@ -152,10 +152,11 @@ def createnode( graph, nodename,*args):
 	current_node_label_obj.inc_node_label()
 	return (label)
 	
-def creategraph():
+def creategraph(name = "test"):
 	global initgraph, graph_label
 	newgraph = pickle.loads(pickle.dumps(initgraph,-1))
 	newgraph['attr']['label'] = graph_label
+	newgraph['attr']['name'] = name
 	graph_label +=1
 	return (newgraph)
 
