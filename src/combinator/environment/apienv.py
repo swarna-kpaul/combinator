@@ -33,6 +33,7 @@ class microapi:
 	
 	def take_action(self,action,remoteserviceheader={}):
 		current_state = self.state['state']
+		#raise NameError("Argh! The API call failed")
 		#print("at take action time",current_state, time.time())
 		########### Take action
 		if not current_state:

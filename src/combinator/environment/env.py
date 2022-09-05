@@ -5,10 +5,16 @@ import psutil
 import traceback
 
 class world_exception(Exception):
-	pass
+	def __init__(self, message={}):            
+        # Call the base class constructor with the parameters it needs
+		super().__init__(message)
+		self.error = message
 
 class world_pending_exception(Exception):
-	pass
+	def __init__(self, message={}):            
+        # Call the base class constructor with the parameters it needs
+		super().__init__(message)
+		self.error = message
 
 class world:
 	
@@ -60,10 +66,10 @@ class world:
 			self.world_failed = 1
 			tock = time.time()
 			self.envtime_sec += tock - tick
-			raise world_exception(str(e))
+			raise world_exception({'message':repr(e),'error':repr(e),'nodeid':0})
 		if self.world_funct.pending_state == 1:
 			self.world_funct.pending_state = 0	
-			raise world_pending_exception('client comm pending')
+			raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':0})
 		
 	
 	def funct(self):

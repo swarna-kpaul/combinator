@@ -1,0 +1,3 @@
+The world_exception and world_pending exception from env.py was not properly handled in interpreter.
+
+This fix have been applied on 5th Sep 2022

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="combinator",
-    version="1.1",
+    version="1.2",
     author="Swarna Kamal Paul",
     author_email="swarna.kpaul@gmail.com",
     description="The programming model to integrate AI components",

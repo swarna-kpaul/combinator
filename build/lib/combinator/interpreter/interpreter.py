@@ -254,6 +254,10 @@ def _interpret_gp(nodename,terminalnode_label,graph,tottime):  #### graph progra
 			parnode_label,pargraph = returngraph(parents[0],graph)
 			parentoutput1,w,wv,tottime = interpreter(parnode_label,pargraph,tottime)
 			setval_graph('dat',subgraph,graph,terminalnode_label,'N')
+	except world_pending_exception as e:
+		raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+	except world_exception as e:
+		raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 	except combinatorruntimeerror as e:
 		e.error.append({'message':"Error in evaluating subgraph in gp node!",'error':'parenterror','nodeid':terminalnode_label})
 		raise combinatorruntimeerror(e.error)
@@ -284,6 +288,10 @@ def _interpret_ap(nodename,terminalnode_label,graph,tottime):  #### apply
 		if len(getval_graph(graph,_nlabel,'E')) >= getargs(_nlabel,graph): ############ all linkconnections satisfied
 			try:
 				currentoutput,w,wv,tottime = interpreter(_nlabel,graph,tottime)
+			except world_pending_exception as e:
+				raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+			except world_exception as e:
+				raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 			except combinatorruntimeerror as e:
 				e.error.append({'message':"Error in evaluating subgraph in apply node! The parentnode1 should return a valid graph type that can be applied on the output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
 				raise combinatorruntimeerror(e.error)
@@ -303,6 +311,10 @@ def _interpret_ap(nodename,terminalnode_label,graph,tottime):  #### apply
 		del graph['terminalnodes'][_nlabel]
 		try:
 			currentoutput,w,wv,tottime = interpreter(_nlabel,graph,tottime)
+		except world_pending_exception as e:
+			raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+		except world_exception as e:
+			raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 		except combinatorruntimeerror as e:
 			e.error.append({'message':"Error in evaluating subgraph in apply node! The parentnode1 should return a valid graph type that can be applied on the output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
 			raise combinatorruntimeerror(e.error)
@@ -350,6 +362,10 @@ def _interpret_fmap(nodename,terminalnode_label,graph,tottime):
 	del graph['terminalnodes'][_nlabel1]
 	try:	
 		in_function,w,wv,tottime=interpreter(_nlabel1,pargraph1, tottime)
+	except world_pending_exception as e:
+		raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+	except world_exception as e:
+		raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 	except combinatorruntimeerror as e:
 		e.error.append({'message':"Error in fetching subgraph of parentnode1 of the fmap node!",'error':'parenterror','nodeid':terminalnode_label})
 		raise combinatorruntimeerror(e.error)
@@ -381,20 +397,18 @@ def _interpret_fmap(nodename,terminalnode_label,graph,tottime):
 				node['fun']['par'] = new_in_function  
 		try:
 			currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
+		except world_pending_exception as e:
+			raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+		except world_exception as e:
+			raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 		except combinatorruntimeerror as e:
 			e.error.append({'message':"Error in evaluating subgraph of parentnode1 in the fmap node on the value "+str(i)+"! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on each element of the list output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
 			raise combinatorruntimeerror(e.error)
 		except Exception as e:
 			raise combinatorruntimeerror([{'message':"Error in evaluating subgraph of parentnode1 in the fmap node on the value "+str(i)+"!",'error':repr(e),'nodeid':terminalnode_label}])
 		currentvaluelist.append(currentdata)
-		#initialnode = _nlabel0
 		remove_node(graph,_nlabel0)
 		remove_node(graph,newvaluenode)
-		#if prev_node != None:
-			#print('prev_node',prev_node)
-		#	remove_node(graph,prev_node)
-		#prev_node = _nlabel0
-	#remove_node(graph,prev_node)
 	remove_node(graph,_nlabel1)
 	setval_graph('dat',currentvaluelist,graph,terminalnode_label,'N')
 	setval_graph('wv',wv,graph,terminalnode_label,'N')
@@ -477,6 +491,10 @@ def _interpret_agg(nodename,terminalnode_label,graph,tottime):
 					node['fun']['par'] = new_in_function  
 			try:
 				currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
+			except world_pending_exception as e:
+				raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+			except world_exception as e:
+				raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 			except combinatorruntimeerror as e:
 				e.error.append({'message':"Error in evaluating subgraph from the output of parentnode1 in the aggregator node on the value "+str(currentvalue2)+"! The subgraph from the output of the parentnode1 should be a valid function that can be applied to aggregate each element of the list output of parentnode2.",'error':'parenterror','nodeid':terminalnode_label})
 				raise combinatorruntimeerror(e.error)
@@ -511,6 +529,10 @@ def _interpret_loop(nodename,terminalnode_label,graph,tottime):
 	del graph['terminalnodes'][_nlabel1]
 	try:
 		in_function,w,wv,tottime=interpreter(_nlabel1,pargraph1, tottime)
+	except world_pending_exception as e:
+		raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+	except world_exception as e:
+		raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 	except combinatorruntimeerror as e:
 		e.error.append({'message':"Error in fetching subgraph of parentnode1 of the loop node!",'error':'parenterror','nodeid':terminalnode_label})
 		raise combinatorruntimeerror(e.error)
@@ -537,6 +559,10 @@ def _interpret_loop(nodename,terminalnode_label,graph,tottime):
 				node['fun']['par'] = new_in_function
 		try:
 			currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
+		except world_pending_exception as e:
+			raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+		except world_exception as e:
+			raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 		except combinatorruntimeerror as e:
 			e.error.append({'message':"Error in evaluating subgraph of parentnode1 on the value "+str(currentdata)+"! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode2 and output of itself.",'error':'parenterror','nodeid':terminalnode_label})
 			raise combinatorruntimeerror(e.error)
@@ -579,6 +605,10 @@ def _interpret_rc(nodename,terminalnode_label,graph,tottime): ###### recursion
 				node['fun']['par'] = new_stopcondition  
 		try:
 			currentdata,w,wv,tottime = interpreter(_nlabel0,graph,tottime)
+		except world_pending_exception as e:
+			raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+		except world_exception as e:
+			raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 		except combinatorruntimeerror as e:
 			try:
 				message = "Error in evaluating stopping condition subgraph from the output of parentnode2 on the value "+str(currentdata)+ " in the recurse node! The subgraph corresponding to the parentnode2 should be a valid function that can be applied on output of parentnode3 and evaluated output of the subgraph recieved from parentnode1."
@@ -596,6 +626,10 @@ def _interpret_rc(nodename,terminalnode_label,graph,tottime): ###### recursion
 			parnode_label,pargraph = returngraph(initialnode,graph)
 			try:
 				data,w1,wv1,tottime = interpreter(parnode_label,pargraph,tottime)
+			except world_pending_exception as e:
+				raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+			except world_exception as e:
+				raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 			except combinatorruntimeerror as e:
 				try:
 					message = "Error in evaluating subgraph from the output of parentnode1 on the value "+str(currentoutput)+ " in the recurse node! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode3 and output of itself."
@@ -627,6 +661,10 @@ def _interpret_rc(nodename,terminalnode_label,graph,tottime): ###### recursion
 					node['fun']['par'] = function1  
 			try:
 				currentoutput,w2,wv2,tottime = interpreter(_nlabel,graph,tottime)
+			except world_pending_exception as e:
+				raise world_pending_exception({'message':'pending clientcomm','error': 'pending','nodeid':terminalnode_label})
+			except world_exception as e:
+				raise world_exception({'message':e.error['message'],'error': e.error['error'],'nodeid':terminalnode_label})
 			except combinatorruntimeerror as e:
 				try:
 					message = "Error in evaluating subgraph from the output of parentnode1 on the value "+str(currentoutput)+ " in the recurse node! The subgraph corresponding to the parentnode1 should be a valid function that can be applied on output of parentnode3 and output of itself."
